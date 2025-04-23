@@ -20,14 +20,34 @@ class DynamicArray:
         self._check_bounds(index)
         self._data[index] = value
 
-    def remove(self, index):
+    def remove_at(self, index):
         self._check_bounds(index)
         removed = self._data[index]
         for i in range(index, self._size - 1):
             self._data[i] = self._data[i + 1]
+        self._data[self._size - 1] = None
         self._size -= 1
-        self._data[self._size] = None
         return removed
+
+    def remove(self, obj):
+        index = self.index_of(obj)
+        if index == -1:
+            return False
+        self.remove_at(index)
+        return True
+
+    def index_of(self, obj):
+        for i in range(self._size):
+            if obj is None:
+                if self._data[i] is None:
+                    return i
+            else:
+                if self._data[i] == obj:
+                    return i
+        return -1
+
+    def contains(self, obj):
+        return self.index_of(obj) != -1
 
     def size(self):
         return self._size
@@ -57,6 +77,13 @@ class DynamicArray:
     def _make_array(capacity):
         return (capacity * ctypes.py_object)()
 
+    def __iter__(self):
+        for i in range(self._size):
+            yield self._data[i]
+
+    def __str__(self):
+        return "[" + ", ".join(str(self._data[i]) for i in range(self._size)) + "]"
+
 
 # ---------------- MAIN ----------------
 if __name__ == "__main__":
@@ -74,7 +101,16 @@ if __name__ == "__main__":
     print("Element at index 0:", array.get(0))
     print("Size:", array.size())
 
-    array.remove(1)
+    array.remove_at(1)
     array.print()  # [10, 30]
 
-    print("Is empty?", array.is_empty())
+    print("Contains 30?", array.contains(30))  # True
+    print("Index of 10:", array.index_of(10))  # 0
+    print("Remove 30:", array.remove(30))      # True
+    array.print()  # [10]
+    print("Is empty?", array.is_empty())       # False
+
+    print("Iterating:", end=" ")
+    for val in array:
+        print(val, end=" ")
+    print()

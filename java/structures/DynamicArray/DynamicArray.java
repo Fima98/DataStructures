@@ -1,6 +1,6 @@
-package structures;
+package structures.DynamicArray;
 
-public class DynamicArray<T> {
+public class DynamicArray<T> implements Iterable<T> {
     private T[] data;
     private int size;
     private int capacity;
@@ -27,7 +27,7 @@ public class DynamicArray<T> {
         data[index] = value;
     }
 
-    public T remove(int index) {
+    public T removeAt(int index) {
         checkBounds(index);
         T removed = data[index];
         for (int i = index; i < size - 1; i++) {
@@ -37,12 +37,37 @@ public class DynamicArray<T> {
         return removed;
     }
 
+    public boolean remove(Object obj) {
+        int index = indexOf(obj);
+        if (index == -1)
+            return false;
+        removeAt(index);
+        return true;
+    }
+
     public int size() {
         return size;
     }
 
     public boolean isEmpty() {
         return size == 0;
+    }
+
+    public int indexOf(Object obj) {
+        for (int i = 0; i < size; i++) {
+            if (obj == null) {
+                if (data[i] == null)
+                    return i;
+            } else {
+                if (obj.equals(data[i]))
+                    return i;
+            }
+        }
+        return -1;
+    }
+
+    public boolean contains(Object obj) {
+        return indexOf(obj) != -1;
     }
 
     @SuppressWarnings("unchecked")
@@ -64,13 +89,48 @@ public class DynamicArray<T> {
     }
 
     public void print() {
-        System.out.print("DynamicArray: [");
+        System.out.print("[");
         for (int i = 0; i < size; i++) {
             System.out.print(data[i]);
             if (i < size - 1)
                 System.out.print(", ");
         }
         System.out.println("]");
+    }
+
+    @Override
+    public java.util.Iterator<T> iterator() {
+        return new java.util.Iterator<T>() {
+            int index = 0;
+
+            @Override
+            public boolean hasNext() {
+                return index < size;
+            }
+
+            @Override
+            public T next() {
+                return data[index++];
+            }
+
+            @Override
+            public void remove() {
+                throw new UnsupportedOperationException();
+            }
+        };
+    }
+
+    @Override
+    public String toString() {
+        StringBuilder sb = new StringBuilder();
+        sb.append("[");
+        for (int i = 0; i < size; i++) {
+            sb.append(data[i]);
+            if (i < size - 1)
+                sb.append(", ");
+        }
+        sb.append("]");
+        return sb.toString();
     }
 
     // ---------------- MAIN ----------------
@@ -89,7 +149,7 @@ public class DynamicArray<T> {
         System.out.println("Element at index 0: " + array.get(0));
         System.out.println("Size: " + array.size());
 
-        array.remove(1);
+        array.removeAt(1);
         array.print(); // [10, 30]
 
         System.out.println("Is empty? " + array.isEmpty());
