@@ -16,6 +16,13 @@ public class SinglyLinkedList<T> implements Iterable<T> {
   }
 
   public void clear() {
+    Node<T> trav = head;
+    while (trav != null) {
+      Node<T> next = trav.next;
+      trav.next = null;
+      trav.data = null;
+      trav = next;
+    }
     head = null;
     size = 0;
   }
